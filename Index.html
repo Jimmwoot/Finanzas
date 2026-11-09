@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#101116">
+  <title>Finanzas Jhoel Enrique</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+
+<header class="topbar">
+  <div>
+    <span class="eyebrow">CONTROL PERSONAL</span>
+    <h1>Finanzas <span>Jhoel Enrique</span></h1>
+  </div>
+  <button class="icon-btn" onclick="exportExcelReport()" title="Exportar reporte completo a Excel">📊</button>
+</header>
+
+<main>
+
+  <section class="hero">
+    <div class="hero-top">
+      <span>DINERO TOTAL EN TUS CUENTAS</span>
+      <span class="live-dot">● ACTIVO</span>
+    </div>
+    <h2 id="totalBalance">Bs 0,00</h2>
+    <p>Suma automática de tus cuentas y ahorros</p>
+  </section>
+
+  <nav class="navigation">
+    <button class="nav-btn active" data-section="dashboard">Resumen</button>
+    <button class="nav-btn" data-section="accounts">Cuentas</button>
+    <button class="nav-btn" data-section="distribution">Distribución</button>
+    <button class="nav-btn" data-section="payments">Pagos</button>
+  </nav>
+
+  <!-- RESUMEN -->
+  <section id="dashboard" class="section active">
+
+    <div class="section-heading">
+      <div>
+        <span class="eyebrow">TU DINERO</span>
+        <h2>Resumen financiero</h2>
+      </div>
+      <button class="primary-btn" onclick="openAccountModal()">+ Cuenta</button>
+    </div>
+
+    <div class="summary-grid">
+      <div class="summary-card">
+        <span>Cuentas registradas</span>
+        <strong id="accountCount">0</strong>
+      </div>
+      <div class="summary-card">
+        <span>Dinero prestado</span>
+        <strong id="loanTotal">Bs 0,00</strong>
+      </div>
+    </div>
+
+    <h3 class="subheading">Tus cuentas y sus préstamos</h3>
+    <div id="dashboardAccounts" class="account-list"></div>
+
+    <div class="section-heading distribution-heading">
+      <div>
+        <span class="eyebrow">PLAN MENSUAL</span>
+        <h2>Tu distribución</h2>
+      </div>
+      <button class="text-btn" onclick="showSection('distribution')">Ver tabla →</button>
+    </div>
+
+    <div id="dashboardBudget" class="budget-list"></div>
+
+  </section>
+
+  <!-- CUENTAS -->
+  <section id="accounts" class="section">
+
+    <div class="section-heading">
+      <div>
+        <span class="eyebrow">SALDOS Y AHORROS</span>
+        <h2>Mis cuentas</h2>
+      </div>
+      <button class="primary-btn" onclick="openAccountModal()">+ Añadir</button>
+    </div>
+
+    <p class="muted">
+      Toca el saldo de cualquier cuenta para editarlo rápido. Abajo verás los préstamos originados en cada una.
+    </p>
+
+    <div id="accountsList" class="account-list"></div>
+
+    <div class="info-card">
+      <strong>Importante</strong>
+      <p>Los préstamos salen automáticamente de la cuenta elegida y se muestran asociados a ella.</p>
+    </div>
+
+    <h3 class="subheading">Todos los préstamos pendientes</h3>
+    <div id="allLoans" class="loan-list"></div>
+
+    <button class="primary-btn full-btn" onclick="openLoanModal()">+ Registrar préstamo</button>
+
+  </section>
+
+  <!-- DISTRIBUCIÓN -->
+  <section id="distribution" class="section">
+
+    <div class="section-heading">
+      <div>
+        <span class="eyebrow">PLANIFICACIÓN</span>
+        <h2>Distribución mensual</h2>
+      </div>
+    </div>
+
+    <div class="income-config">
+      <label for="targetIncome">Ingreso mensual previsto (Bs)</label>
+      <input type="number" id="targetIncome" min="0" step="0.01" inputmode="decimal">
+      <button class="secondary-btn" onclick="saveTargetIncome()">Guardar ingreso</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Destino</th>
+            <th>%</th>
+            <th>Monto</th>
+          </tr>
+        </thead>
+        <tbody id="budgetTable"></tbody>
+        <tfoot>
+          <tr>
+            <td>Total</td>
+            <td id="percentageTotal">100%</td>
+            <td id="budgetTotal">Bs 0,00</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <button class="primary-btn full-btn" onclick="saveBudgets()">Guardar porcentajes</button>
+
+    <div class="info-card">
+      <strong>¿Cómo funciona?</strong>
+      <p>Modifica los porcentajes según tus necesidades. Los montos se calcularán automáticamente sobre tu ingreso mensual.</p>
+    </div>
+
+  </section>
+
+  <!-- PAGOS -->
+  <section id="payments" class="section">
+
+    <div class="section-heading">
+      <div>
+        <span class="eyebrow">CONTROL MENSUAL</span>
+        <h2>Pagos y pendientes</h2>
+      </div>
+      <button class="primary-btn" onclick="openPaymentModal()">+ Añadir</button>
+    </div>
+
+    <div class="payment-summary">
+      <div>
+        <span>Pagados</span>
+        <strong id="paidCount">0</strong>
+      </div>
+      <div>
+        <span>Pendientes</span>
+        <strong id="pendingCount">0</strong>
+      </div>
+    </div>
+
+    <h3 class="subheading">Tus pagos fijos</h3>
+    <div id="paymentsList" class="payment-list"></div>
+
+    <p class="muted small">
+      Los pagos marcados quedan translúcidos. Puedes desmarcarlos o mantenerlos para activarlos cuando gustes.
+    </p>
+
+    <div class="action-row" style="margin-top: 30px;">
+      <button class="secondary-btn" onclick="exportExcelReport()">📥 Exportar reporte a Excel (CSV)</button>
+      <button class="secondary-btn" onclick="exportBackup()">↥ Respaldar app (JSON)</button>
+      <button class="secondary-btn" onclick="importBackup()">⟳ Restaurar respaldo</button>
+    </div>
+
+  </section>
+
+</main>
+
+<footer>
+  <p>FINANZAS JHOEL ENRIQUE</p>
+  <span>Tu dinero, bajo tu control.</span>
+</footer>
+
+<!-- MODALES -->
+<dialog id="accountDialog">
+  <form id="accountForm">
+    <div class="modal-heading">
+      <h2 id="accountModalTitle">Nueva cuenta</h2>
+      <button type="button" class="close-btn" onclick="closeDialog('accountDialog')">×</button>
+    </div>
+    <input type="hidden" id="accountId">
+    <label>Nombre de la cuenta</label>
+    <input id="accountName" required placeholder="Ej. Efectivo, BCP, Ahorros">
+    <label>Saldo actual (Bs)</label>
+    <input id="accountBalance" type="number" step="0.01" min="0" required placeholder="0.00" inputmode="decimal">
+    <div class="modal-actions">
+      <button type="button" class="secondary-btn" onclick="closeDialog('accountDialog')">Cancelar</button>
+      <button class="primary-btn" type="submit">Guardar</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="loanDialog">
+  <form id="loanForm">
+    <div class="modal-heading">
+      <h2>Registrar préstamo</h2>
+      <button type="button" class="close-btn" onclick="closeDialog('loanDialog')">×</button>
+    </div>
+    <label>Persona</label>
+    <input id="loanPerson" required placeholder="Nombre de la persona">
+    <label>Cuenta de origen</label>
+    <select id="loanAccount" required></select>
+    <label>Cantidad prestada (Bs)</label>
+    <input id="loanAmount" type="number" min="0.01" step="0.01" required inputmode="decimal">
+    <label>Fecha del préstamo</label>
+    <input id="loanDate" type="date" required>
+    <label>Fecha prevista de devolución</label>
+    <input id="loanDue" type="date">
+    <label>Descripción (opcional)</label>
+    <input id="loanDescription" placeholder="Detalle del préstamo">
+    <div class="modal-actions">
+      <button type="button" class="secondary-btn" onclick="closeDialog('loanDialog')">Cancelar</button>
+      <button type="submit" class="primary-btn">Prestar dinero</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="paymentDialog">
+  <form id="paymentForm">
+    <div class="modal-heading">
+      <h2>Nuevo pago</h2>
+      <button type="button" class="close-btn" onclick="closeDialog('paymentDialog')">×</button>
+    </div>
+    <label>Nombre del pago</label>
+    <input id="paymentName" required placeholder="Ej. Alquiler, Luz">
+    <label>Monto (Bs)</label>
+    <input id="paymentAmount" type="number" min="0" step="0.01" placeholder="0" inputmode="decimal">
+    <label>Fecha de vencimiento</label>
+    <input id="paymentDue" type="date">
+    <div class="modal-actions">
+      <button type="button" class="secondary-btn" onclick="closeDialog('paymentDialog')">Cancelar</button>
+      <button class="primary-btn" type="submit">Guardar pago</button>
+    </div>
+  </form>
+</dialog>
+
+<input type="file" id="backupFile" accept=".json,application/json" hidden>
+
+</body>
+</html>
