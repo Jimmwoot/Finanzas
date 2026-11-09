@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#101116">
-  <title>Finanzas Jhoel Enrique</title>
+  <title>Control Financiero</title>
   <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
   <link rel="manifest" href="manifest.json">
@@ -14,9 +14,17 @@
 <header class="topbar">
   <div>
     <span class="eyebrow">CONTROL PERSONAL</span>
-    <h1>Finanzas <span>Jhoel Enrique</span></h1>
+    <h1>Control <span>Financiero</span></h1>
   </div>
-  <button class="icon-btn" onclick="exportExcelReport()" title="Exportar reporte completo a Excel">📊</button>
+  <div style="display: flex; gap: 8px; align-items: center;">
+    <select id="currencySelector" onchange="changeCurrency(this.value)" title="Seleccionar moneda" style="width: auto; padding: 8px 10px; font-size: 13px; font-weight: 700; background: var(--panel2); color: var(--accent); border: 1px solid var(--border); border-radius: 12px;">
+      <option value="$">$ (Dólar)</option>
+      <option value="Bs">Bs (Boliviano)</option>
+      <option value="€">€ (Euro)</option>
+      <option value="S/.">S/. (Sol)</option>
+    </select>
+    <button class="icon-btn" onclick="exportExcelReport()" title="Exportar reporte completo a Excel">📊</button>
+  </div>
 </header>
 
 <main>
@@ -26,7 +34,7 @@
       <span>DINERO TOTAL EN TUS CUENTAS</span>
       <span class="live-dot">● ACTIVO</span>
     </div>
-    <h2 id="totalBalance">Bs 0,00</h2>
+    <h2 id="totalBalance">$ 0,00</h2>
     <p>Suma automática de tus cuentas y ahorros</p>
   </section>
 
@@ -55,7 +63,7 @@
       </div>
       <div class="summary-card">
         <span>Dinero prestado</span>
-        <strong id="loanTotal">Bs 0,00</strong>
+        <strong id="loanTotal">$ 0,00</strong>
       </div>
     </div>
 
@@ -114,7 +122,7 @@
     </div>
 
     <div class="income-config">
-      <label for="targetIncome">Ingreso mensual previsto (Bs)</label>
+      <label for="targetIncome">Ingreso mensual previsto</label>
       <input type="number" id="targetIncome" min="0" step="0.01" inputmode="decimal">
       <button class="secondary-btn" onclick="saveTargetIncome()">Guardar ingreso</button>
     </div>
@@ -133,7 +141,7 @@
           <tr>
             <td>Total</td>
             <td id="percentageTotal">100%</td>
-            <td id="budgetTotal">Bs 0,00</td>
+            <td id="budgetTotal">$ 0,00</td>
           </tr>
         </tfoot>
       </table>
@@ -188,7 +196,7 @@
 </main>
 
 <footer>
-  <p>FINANZAS JHOEL ENRIQUE</p>
+  <p>CONTROL FINANCIERO</p>
   <span>Tu dinero, bajo tu control.</span>
 </footer>
 
@@ -201,8 +209,8 @@
     </div>
     <input type="hidden" id="accountId">
     <label>Nombre de la cuenta</label>
-    <input id="accountName" required placeholder="Ej. Efectivo, BCP, Ahorros">
-    <label>Saldo actual (Bs)</label>
+    <input id="accountName" required placeholder="Ej. Efectivo, Banco, Ahorros">
+    <label>Saldo actual</label>
     <input id="accountBalance" type="number" step="0.01" min="0" required placeholder="0.00" inputmode="decimal">
     <div class="modal-actions">
       <button type="button" class="secondary-btn" onclick="closeDialog('accountDialog')">Cancelar</button>
@@ -221,7 +229,7 @@
     <input id="loanPerson" required placeholder="Nombre de la persona">
     <label>Cuenta de origen</label>
     <select id="loanAccount" required></select>
-    <label>Cantidad prestada (Bs)</label>
+    <label>Cantidad prestada</label>
     <input id="loanAmount" type="number" min="0.01" step="0.01" required inputmode="decimal">
     <label>Fecha del préstamo</label>
     <input id="loanDate" type="date" required>
@@ -244,7 +252,7 @@
     </div>
     <label>Nombre del pago</label>
     <input id="paymentName" required placeholder="Ej. Alquiler, Luz">
-    <label>Monto (Bs)</label>
+    <label>Monto</label>
     <input id="paymentAmount" type="number" min="0" step="0.01" placeholder="0" inputmode="decimal">
     <label>Fecha de vencimiento</label>
     <input id="paymentDue" type="date">
