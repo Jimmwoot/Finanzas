@@ -1,7 +1,7 @@
 {
-  "name": "Finanzas Jhoel Enrique",
+  "name": "Control Financiero",
   "short_name": "Finanzas",
-  "start_url": "index.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#101116",
   "theme_color": "#101116",
