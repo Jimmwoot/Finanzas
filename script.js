@@ -1,7 +1,8 @@
-const STORAGE_KEY = "finanzasJhoel";
+const STORAGE_KEY = "controlFinancieroApp";
 
 const defaultData = {
-  targetIncome: 3300,
+  currency: "$",
+  targetIncome: 3000,
   budgets: [
     { id: "casa", name: "Casa y esenciales", percentage: 45 },
     { id: "crecimiento", name: "Crecimiento e inversiones", percentage: 25 },
@@ -47,8 +48,14 @@ function saveData() {
   renderAll();
 }
 
+function changeCurrency(newCurrency) {
+  data.currency = newCurrency;
+  saveData();
+}
+
 function money(value) {
-  return "Bs " + Number(value || 0).toLocaleString("es-BO", {
+  const curr = data.currency || "$";
+  return curr + " " + Number(value || 0).toLocaleString("es-ES", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
@@ -89,7 +96,7 @@ function quickEditBalance(id) {
   const account = data.accounts.find(a => a.id === id);
   if (!account) return;
 
-  const input = prompt(`Editar saldo de ${account.name} (Bs):`, account.balance);
+  const input = prompt(`Editar saldo de ${account.name} (${data.currency}):`, account.balance);
   if (input === null) return;
 
   const newBalance = Number(input);
@@ -182,7 +189,7 @@ function transferMoney(id) {
     return;
   }
 
-  const amount = Number(prompt("¿Cuánto deseas transferir? (Bs)"));
+  const amount = Number(prompt(`¿Cuánto deseas transferir? (${data.currency})`));
 
   if (!Number.isFinite(amount) || amount <= 0) return;
 
@@ -393,6 +400,7 @@ function saveBudgets() {
 
 function renderBudgetTable() {
   document.getElementById("targetIncome").value = data.targetIncome;
+  document.getElementById("currencySelector").value = data.currency || "$";
 
   const tbody = document.getElementById("budgetTable");
 
@@ -583,7 +591,7 @@ function exportBackup() {
     { type: "application/json" }
   );
 
-  downloadFile(blob, `finanzas-respaldo-${localDate()}.json`);
+  downloadFile(blob, `respaldo-finanzas-${localDate()}.json`);
 }
 
 function importBackup() {
@@ -625,29 +633,27 @@ document.getElementById("backupFile").addEventListener("change", async event => 
   event.target.value = "";
 });
 
-// EXPORTAR REPORTE ORDENADO A EXCEL (CSV COMPATIBLE CON CELDAS Y SECCIONES)
+// EXPORTAR REPORTE ORDENADO A EXCEL
 function exportExcelReport() {
   let rows = [];
 
-  // SECCIÓN 1: RESUMEN GENERAL
-  rows.push(["REPORTE FINANCIERO - JHOEL ENRIQUE"]);
+  rows.push(["REPORTE FINANCIERO PERSONAL"]);
+  rows.push(["Moneda:", data.currency || "$"]);
   rows.push(["Fecha de exportacion:", localDate()]);
-  rows.push(["Dinero Total en Cuentas (Bs):", totalBalance()]);
-  rows.push(["Total Dinero Prestado (Bs):", totalLoans()]);
-  rows.push(["Ingreso Mensual Previsto (Bs):", data.targetIncome]);
+  rows.push(["Dinero Total en Cuentas:", totalBalance()]);
+  rows.push(["Total Dinero Prestado:", totalLoans()]);
+  rows.push(["Ingreso Mensual Previsto:", data.targetIncome]);
   rows.push([]);
 
-  // SECCIÓN 2: CUENTAS
   rows.push(["--- MIS CUENTAS ---"]);
-  rows.push(["Nombre de Cuenta", "Saldo Actual (Bs)"]);
+  rows.push(["Nombre de Cuenta", "Saldo Actual"]);
   data.accounts.forEach(acc => {
     rows.push([acc.name, acc.balance]);
   });
   rows.push([]);
 
-  // SECCIÓN 3: PRÉSTAMOS
   rows.push(["--- PRESTAMOS PENDIENTES Y SALDADOS ---"]);
-  rows.push(["Persona", "Cuenta de Origen", "Monto Original (Bs)", "Saldo Pendiente (Bs)", "Fecha", "Vencimiento", "Estado"]);
+  rows.push(["Persona", "Cuenta de Origen", "Monto Original", "Saldo Pendiente", "Fecha", "Vencimiento", "Estado"]);
   data.loans.forEach(l => {
     const acc = data.accounts.find(a => a.id === l.accountId);
     rows.push([
@@ -662,18 +668,16 @@ function exportExcelReport() {
   });
   rows.push([]);
 
-  // SECCIÓN 4: DISTRIBUCIÓN MENSUAL
   rows.push(["--- DISTRIBUCION MENSUAL ---"]);
-  rows.push(["Destino", "Porcentaje (%)", "Monto Calculado (Bs)"]);
+  rows.push(["Destino", "Porcentaje (%)", "Monto Calculado"]);
   data.budgets.forEach(b => {
     const amount = (data.targetIncome * b.percentage) / 100;
     rows.push([b.name, b.percentage + "%", amount]);
   });
   rows.push([]);
 
-  // SECCIÓN 5: PAGOS FIJOS
   rows.push(["--- PAGOS Y PENDIENTES ---"]);
-  rows.push(["Nombre del Pago", "Monto (Bs)", "Vencimiento", "Estado Actual"]);
+  rows.push(["Nombre del Pago", "Monto", "Vencimiento", "Estado Actual"]);
   data.payments.forEach(p => {
     rows.push([
       p.name,
@@ -683,7 +687,6 @@ function exportExcelReport() {
     ]);
   });
 
-  // CONVERTIR A CSV CON SEPARADOR DE PUNTO Y COMA (EXCEL EN ESPAÑOL LO LEE PERFECTO)
   const csvContent = rows.map(row =>
     row.map(val => `"${String(val ?? "").replace(/"/g, '""')}"`).join(";")
   ).join("\n");
@@ -696,12 +699,12 @@ function exportExcelReport() {
 }
 
 function downloadFile(blob, filename) {
-  const url = URL.createObjectURL(blob);
+  const url = URL.createObjectURL(url || blob);
   const a = document.createElement("a");
-  a.href = url;
+  a.href = URL.createObjectURL(blob);
   a.download = filename;
   a.click();
-  URL.revokeObjectURL(url);
+  URL.revokeObjectURL(a.href);
 }
 
 // ACTUALIZACIÓN GENERAL
